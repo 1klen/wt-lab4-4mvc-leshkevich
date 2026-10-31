@@ -1,13 +1,16 @@
-# Сборка
+# Этап сборки
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
-COPY ["wt-lab4-4mvc-leshkevich.csproj", "./"]
-RUN dotnet restore "wt-lab4-4mvc-leshkevich.csproj"
-COPY . .
-WORKDIR "/src/."
-RUN dotnet publish "wt_lab4_4mvc_leshkevich.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
-# запуск
+# Копируем файл проекта из корня репозитория
+COPY wt-lab4-4mvc-leshkevich.csproj ./
+RUN dotnet restore "wt-lab4-4mvc-leshkevich.csproj"
+
+# Копируем все остальные файлы проекта
+COPY . .
+RUN dotnet publish "wt-lab4-4mvc-leshkevich.csproj" -c Release -o /app/publish /p:UseAppHost=false
+
+# Этап запуска
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
 WORKDIR /app
 COPY --from=build /app/publish .
